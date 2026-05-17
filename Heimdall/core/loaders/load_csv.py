@@ -7,7 +7,6 @@ class LoadCsv:
     def _bad_line_handler(line):
         # Pandas hatalı bir satır bulduğunda bu fonksiyonu tetikler.
         # 'line' değişkeni bize hatalı satırın içeriğini bir liste olarak verir.
-        # Örn: ['my name is', '-10', '......', 'ekstra_veri']
 
         log_message = f"[KIRLI VERI] Hatali satir yakalandi -> {line}\n"
         print(f"--- Uyarı: Hatalı satır tespit edildi, log dosyasına yazılıyor...")
@@ -37,7 +36,7 @@ class LoadCsv:
                 encoding=encoding,
                 sep=None,
                 engine="python",
-                on_bad_lines=LoadCsv._bad_line_handler,  # İşte bizim dedektif burada!
+                on_bad_lines=LoadCsv._bad_line_handler,
                 quotechar='"',
                 escapechar="\\",
             )

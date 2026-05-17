@@ -5,14 +5,14 @@ from ...utils.config_manager import ConfigManager
 class MyPipeline:
     def __init__(self, config_path="config.yaml"):
         self.data = None
-        # YAML'ı oku ve hafızaya al
+        # YAML'ı oku
         self.config = ConfigManager.read_config(config_path)
         print(
             f"--- Heimdall: '{self.config.get('project_name', 'Adsız Proje')}' başlatıldı."
         )
 
     def run(self):
-        """YAML'daki adımları sırayla çalıştıran ana motor."""
+        # YAML'daki adımları sırayla çalıştır
         steps = self.config.get("pipeline", [])
 
         for step_config in steps:
@@ -23,8 +23,6 @@ class MyPipeline:
 
             elif step_name == "save":
                 self.save(step_config.get("path"))
-
-            # Gelecekte buraya 'clean' adımları gelecek
 
         print("--- Heimdall: Tüm süreç başarıyla tamamlandı.")
 

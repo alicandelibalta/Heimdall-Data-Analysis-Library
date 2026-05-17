@@ -21,7 +21,6 @@ class LoadCsv:
         if os.path.exists("heimdall_bad_lines.txt"):
             os.remove("heimdall_bad_lines.txt")
 
-        # 1. Ön Kontrol: Uzantı bariyere takılıyor mu?
         if file_path.endswith((".xlsx", ".xls")):
             raise ValueError(
                 f"Hata: '{file_path}' bir Excel dosyasıdır! "
@@ -41,11 +40,11 @@ class LoadCsv:
                 escapechar="\\",
             )
         except Exception as e:
-            # 2. Arka Kapı Kontrolü: Uzantısı .csv yapılmış ama içi aslında Excel olan uyanık dosya kontrolü
+            # gerçekten csv mi değil mi kontrol
             error_str = str(e)
             if "tokenizing data" in error_str or "line" in error_str:
-                # Excel dosyalarının ilk 2 baytı her zaman 'PK' (Zip formatı) karakterleridir.
-                # Emin olmak için dosyanın ilk birkaç karakterine göz atalım:
+                # Excel dosyalarının ilk 2 baytı her zaman 'PK'dır bunu kontrol edelim.
+                # Bu sıkça karşılaşabileceğimiz sadece excel olup olmadığına dair kontrol.
                 try:
                     with open(file_path, "rb") as f:
                         start_bytes = f.read(4)
@@ -57,7 +56,11 @@ class LoadCsv:
                             f"Lütfen dosyayı kontrol edin ve gerçek bir CSV olarak dışa aktarın."
                         )
                 except Exception:
-                    pass  # Dosya okunamazsa normal hata akışına bırak
+                    pass
 
             # Eğer Excel değil de başka bir yapısal hataysa normal hatayı fırlat
-            raise Exception(f"CSV okunurken beklenmedik hata: {e}")
+            raise TypeError(
+                f"!!! FORMAT HATASI !!!\n"
+                f"'{file_path}' okunamadı. Bu yüklediğin şey geçerli bir CSV dosyası değil.\n"
+                f"Detaylı Hata: {error_str}"
+            )
