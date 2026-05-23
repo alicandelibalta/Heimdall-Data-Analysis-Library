@@ -17,7 +17,6 @@ config.yaml
 output/
 sonuc/
 
-
 dist/
 build/
 *.egg-info/
