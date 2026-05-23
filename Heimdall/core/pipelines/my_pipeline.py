@@ -3,7 +3,7 @@ from ...utils.config_manager import ConfigManager
 
 
 class MyPipeline:
-    def __init__(self, config_path="config.yaml"):
+    def __init__(self, config_path):
         self.data = None
         # Yeni esnek YAML yapısını okuyoruz
         self.config = ConfigManager.read_config(config_path)

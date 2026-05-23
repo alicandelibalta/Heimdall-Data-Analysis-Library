@@ -14,7 +14,7 @@ class SaveCsv:
             file_ext = ".csv"
 
         # 2. Zaman damgası oluştur (YılAyGün_SaatDakika)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        timestamp = datetime.now().strftime("%d.%m.%Y._%H.%M")
 
         # 3. Dinamik dosya ismi
         final_path = f"{file_base}_{timestamp}{file_ext}"

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "heimdall"
+version = "0.1.0"
+description = "Dynamic, flexible and powerful data analyze library."
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = Alican Delibalta, email = alicandelibalta106@gmail.com }
+]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "PyYAML>=6.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["heimdall*"]
+
+[project.urls]
+"Homepage" = "https://github.com/alicandelibalta/Heimdall-Data-Analysis-Library"
