@@ -1,62 +1,45 @@
-# 👁️ Deli-Heimdall: Data Analysis Library
+🚀 Deli-Heimdall v0.1.5 - The Modular YAML-Driven Pipeline Release
+We are excited to introduce a major architectural leap in the core pipeline execution model of Deli-Heimdall. With this release, the library transitions into a highly scalable, plugin-based framework, allowing users to build complex data processing workflows using pure YAML configurations without writing a single line of boilerplate Python code.
 
-**Deli-Heimdall** is an open-source Python library designed to manage modern data engineering and data analysis workflows through a dynamic, flexible, and bulletproof pipeline architecture.
+🌟 Key Architectural Updates
+Safely Decoupled Pipeline Executor (MyPipeline): The core engine has been stripped of hardcoded methods. It now acts as a pure, lightweight YAML orchestrator that translates multi-stage blueprints into dynamic executions.
 
-Named after the all-seeing Norse god, **Deli-Heimdall** spots structural anomalies, formatting issues, and corrupted rows in your datasets at the very first step, ensuring clean and reliable data processing.
+Declarative Multi-Stage Configurations (stages & actions): Complex pipelines can now be vertically scaled and logically grouped into stages (e.g., Ingestion, Cleaning, Export). This keeps your configuration files readable and organized, no matter how large the project grows.
 
----
+Dynamic Plugin Discovered via hasattr: Seamlessly integrates standalone loaders and cleaners. Adding new data processing capabilities is now as simple as dropping a new .py file into the corresponding module directory; the pipeline engine automatically adopts it.
 
-## 🚀 Key Features
+Bulletproof Data Cleaning (delete_empty_rows): Introduced a resilient cleaning mechanism that strips whitespace and unmasks pseudo-empty string values like "None", "nan", and "NaN", forcing them into actual pd.NA bounds before elimination.
 
-- **Zero-Keyword Flexible Pipeline:** Manages dynamic workflows directly via YAML/JSON using native function names, without being bound to rigid keywords like `step`.
-- **Armored File Loader (Smart CSV/Excel Detection):** Detects spoofed files—such as an Excel file intentionally renamed to `.csv`—by inspecting file signatures (`PK\x03\x04`) under the hood, instantly catching format manipulation.
-- **Dirty Data Isolation:** Extracts malformed or corrupted rows during CSV parsing without breaking the main execution loop, dumping them into a dedicated `logs/heimdall_bad_lines.txt` report.
-- **Enterprise-Grade Logging:** Features a built-in dual-handler logging mechanism that outputs clean console streams and automatically preserves execution history inside an isolated `logs/` directory.
-- **Frontend-Ready Design:** Built on a completely data-driven architecture, making it seamlessly compatible with future Web/Desktop interfaces (React, Vue, Electron, etc.).
+Production-Grade Logging Integration: Replaced all primitive print statements with a robust, timestamps-enabled logger utility for transparent and traceable runtime audit logs.
 
----
-
-## 🛠️ Installation & Quick Start
-
-Install the official package directly from PyPI:
-
-```bash
-pip install deli-heimdall
-Development Mode (Editable Install)
-If you are developing locally on the source code, eliminate the need for PYTHONPATH workarounds by running this command in the root directory:
-
-Bash
-pip install -e .
-Now you can run your scripts directly from any terminal session:
-
-Bash
-python main.py
-
-📋 Example Pipeline Configuration (config.yaml)
-Deli-Heimdall eliminates complex loops and messy if-elif boilerplates. Simply define your steps sequentially in a YAML configuration file:
+📦 How It Works (For Users)
+Users can now initiate a full data pipeline with just three lines of code by mapping their logic entirely inside a config.yaml file:
 
 YAML
-project_name: "Heimdall Energy Data Analysis"
+project_name: "Production Energy Analytics"
 
-pipeline:
-  load:
-    path: "data/raw_dataset.csv"
+stages:
+
+- name: "Data Ingestion"
+  actions:
+  - load_csv:
+    path: "raw_data.csv"
     encoding: "utf-8"
 
-  # Future transformation modules will be chained here dynamically
+- name: "Data Cleaning"
+  actions:
+  - delete_empty_rows:
+    column: "consumption_kw"
 
-  save:
-    path: "output/cleaned_result.csv"
-In your Python code, executing this pipeline is as simple as:
+- name: "Data Export"
+  actions: - save_csv:
+  path: "output/cleaned_data.csv"
+  Python
+  from dheimdall.core.pipelines import MyPipeline
 
-Python
-import dheimdall
+pipeline = MyPipeline("config.yaml")
+pipeline.run()
+🛠️ Technical Enhancements & Bug Fixes
+Added an early-catch path verification (os.path.exists) during pipeline initialization to prevent cryptic runtime crashes.
 
-# Your dynamic pipeline execution logic here
-🤝 Contributing
-Deli-Heimdall features a highly modular, open architecture. To introduce a new data processing stage, simply add a callable method to your pipeline class—our dynamic execution engine will automatically register and resolve it!
-
-Feel free to open an Issue or submit a Pull Request for any features or improvements you'd like to add.
-
-Licensed under the MIT License.
-```
+Implemented clean Type Hinting (pd.DataFrame, str) across core modules for enhanced IDE autocompletion and enterprise-grade maintainability.
