@@ -1,56 +1,81 @@
-from ..loaders import LoadCsv, SaveCsv
+import os
 from ...utils.config_manager import ConfigManager
+from ...utils.logger import logger  # 🎯 Log mekanizmamızı içeri alıyoruz
+from .. import loaders, cleaners
 
 
 class MyPipeline:
-    def __init__(self, config_path):
-        self.data = None
-        # Yeni esnek YAML yapısını okuyoruz
+    def __init__(self, config_path: str):
+        """
+        Deli-Heimdall Pipeline Motoru.
+        Kullanıcının kendi proje klasöründe belirttiği YAML dosyasını okur ve adımları yürütür.
+        """
+        if not os.path.exists(config_path):
+            error_msg = (
+                f"Belirtilen '{config_path}' konfigürasyon dosyası bulunamadı! "
+                f"Lütfen terminali çalıştırdığın dizinde bu dosyanın var olduğundan emin ol knka."
+            )
+            logger.error(error_msg)
+            raise FileNotFoundError(f"\n🚨 [Deli-Heimdall Hatası]: {error_msg}")
+
+        # Kullanıcının dizinindeki YAML dosyasını okuyoruz
         self.config = ConfigManager.read_config(config_path)
-        print(
-            f"--- Heimdall: '{self.config.get('project_name', 'Adsız Proje')}' başlatıldı."
+        self.data = None
+
+        logger.info(
+            f"👁️ Deli-Heimdall Saf Motor: '{self.config.get('project_name', 'Adsız Proje')}' başlatıldı."
         )
 
     def run(self):
-        # YAML'daki adımları sırayla liste olarak alıyoruz
-        steps = self.config.get("pipeline", [])
+        """
+        YAML içindeki tüm evreleri (stages) ve altındaki aksiyonları (actions) sırayla tetikler.
+        """
+        stages = self.config.get("stages", [])
 
-        for step_config in steps:
-            # Boş adımları pas geç
-            if not step_config:
-                continue
+        if not stages:
+            logger.warning(
+                "YAML dosyasında yürütülecek hiçbir 'stages' (evre) bulunamadı."
+            )
+            return
 
-            # İlk key fonksiyon adı, altındaki value'lar blok parametrelerdir.
-            key_name, values = list(step_config.items())[0]
+        # Evreleri sırayla dönüyoruz (Örn: Veri_Yukleme -> Veri_Temizleme)
+        for stage in stages:
+            stage_name = stage.get("name", "Bilinmeyen Evre")
+            logger.info(f"🚀 [Evre Başladı]: {stage_name}")
 
-            # 1. KONTROL: Sınıfın içinde bu isimde bir key var mı?
-            method = getattr(self, key_name, None)
+            # O evrenin altındaki aksiyon listesini sırayla dönüyoruz
+            actions = stage.get("actions", [])
+            for action in actions:
+                if not action:
+                    continue
 
-            # 2. KONTROL: Bulunan şey gerçekten çağrılabilir bir fonksiyon mu?
-            if method is not None and callable(method):
-                # Parametre bloğu boş bırakıldıysa (None ise) hata vermemesi için boş sözlük ({}) güvencesi
-                kwargs = values if values is not None else {}
+                # YAML'daki her bir satırı (fonskiyon_adi: parametreler) şeklinde söküyoruz
+                func_name, kwargs = list(action.items())[0]
+                kwargs = kwargs if kwargs is not None else {}
 
-                print(f"--- [Esnek Akış] Tetiklenen Adım: {key_name}")
-                # Metodu, içindeki dinamik parametrelerle patlatarak çalıştırıyoruz
-                method(**kwargs)
-            else:
-                raise AttributeError(
-                    f"!!! MİMARİ HATA !!!\n"
-                    f"Heimdall kütüphanesinde '{key_name}' adında çağrılabilir bir metot bulunamadı.\n"
-                    f"Lütfen pipeline adımlarını veya fonksiyon isimlerini kontrol edin."
-                )
+                # loaders altında var mı?
+                if hasattr(loaders, func_name):
+                    func = getattr(loaders, func_name)
+                    logger.info(f"  └─ 📦 [Giriş/Çıkış] {func_name} çalıştırılıyor...")
 
-        print("--- Heimdall: Tüm süreç başarıyla tamamlandı.")
+                    if func_name.startswith("load"):
+                        self.data = func(**kwargs)
+                    elif func_name.startswith("save"):
+                        func(df=self.data, **kwargs)
 
-    def load_csv(self, path, encoding="utf-8"):
-        # Artık YAML'dan encoding gelse de gelmese de default olarak 'utf-8' korumalı
-        self.data = LoadCsv.load(path, encoding=encoding)
-        return self
+                # cleaners altında var mı?
+                elif hasattr(cleaners, func_name):
+                    func = getattr(cleaners, func_name)
+                    logger.info(f"  └─ 🧹 [Temizlik] {func_name} çalıştırılıyor...")
 
-    def save_csv(self, path):
-        if self.data is not None:
-            SaveCsv.save(self.data, path)
-        else:
-            print("--- Uyarı: Hafızada kaydedilecek veri bulunamadı (self.data boş).")
-        return self
+                    self.data = func(df=self.data, **kwargs)
+
+                else:
+                    error_msg = (
+                        f"Deli-Heimdall sisteminde '{func_name}' adında bir eklenti (plugin) bulunamadı. "
+                        f"Lütfen loaders veya cleaners klasöründeki dosyalarını kontrol et."
+                    )
+                    logger.error(f"MİMARİ HATA: {error_msg}")
+                    raise AttributeError(f"\n!!! MİMARİ HATA !!!\n{error_msg}")
+
+        logger.info("✅ Deli-Heimdall: Tüm aşamalar başarıyla tamamlandı.")
