@@ -1,5 +1,5 @@
 # main.py içeriği
-from Heimdall.core.pipelines.my_pipeline import MyPipeline
+from dheimdall.core.pipelines.my_pipeline import MyPipeline
 
 
 def main():
