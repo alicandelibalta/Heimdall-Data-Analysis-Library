@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deli-heimdall"
-version = "0.1.0"  
+version = "0.1.3"
 description = "Dynamic, flexible and powerful data analyze library."
 readme = "README.md"
 requires-python = ">=3.8"
