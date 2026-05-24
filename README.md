@@ -1,49 +1,62 @@
-# 👁️ Heimdall Data Analysis Library
+# 👁️ Deli-Heimdall: Data Analysis Library
 
-Heimdall, modern veri mühendisliği ve veri analizi süreçlerini dinamik, esnek ve kurşun geçirmez bir boru hattı (pipeline) mimarisiyle yönetmek için tasarlanmış açık kaynaklı bir Python kütüphanesidir.
+**Deli-Heimdall** is an open-source Python library designed to manage modern data engineering and data analysis workflows through a dynamic, flexible, and bulletproof pipeline architecture.
 
-Adını her şeyi gören İskandinav tanrısından alan Heimdall, verilerinizin yapısal sorunlarını, format hatalarını ve kirliliklerini daha ilk adımda yakalar ve arındırır.
-
----
-
-## 🚀 Öne Çıkan Özellikler
-
-- **Sıfır Kelime Bağımlılıklı Esnek Pipeline:** `step` gibi katı anahtar kelimelere bağlı kalmadan, doğrudan YAML/JSON üzerinden fonksiyon isimleriyle dinamik süreç yönetimi.
-- **Akıllı CSV/Excel Ayrımı (Zırhlı Yükleyici):** Uzantısı `.csv` yapılmış ama içi aslında Excel olan manipüle edilmiş dosyaları dosya imzasından (`PK\x03\x04`) tanır, format hatasını yüzünüze vurur.
-- **Kirli Veri İzolasyonu:** CSV okuma esnasında patlayan hatalı/bozuk satırları ana akışı bozmadan ayıklar ve `heimdall_bad_lines.txt` raporuna fırlatır.
-- **Frontend Entegrasyonuna Hazır:** Tamamen veri yapısı güdümlü (Data-Driven) mimarisi sayesinde gelecekteki bir Web/Masaüstü arayüzüne (React, Vue vb.) doğrudan bağlanabilir.
+Named after the all-seeing Norse god, **Deli-Heimdall** spots structural anomalies, formatting issues, and corrupted rows in your datasets at the very first step, ensuring clean and reliable data processing.
 
 ---
 
-## 🛠️ Kurulum & Çalıştırma
+## 🚀 Key Features
 
-Projeyi yerelde çalıştırmak için terminalden bağımlılıkları yükleyin:
+- **Zero-Keyword Flexible Pipeline:** Manages dynamic workflows directly via YAML/JSON using native function names, without being bound to rigid keywords like `step`.
+- **Armored File Loader (Smart CSV/Excel Detection):** Detects spoofed files—such as an Excel file intentionally renamed to `.csv`—by inspecting file signatures (`PK\x03\x04`) under the hood, instantly catching format manipulation.
+- **Dirty Data Isolation:** Extracts malformed or corrupted rows during CSV parsing without breaking the main execution loop, dumping them into a dedicated `logs/heimdall_bad_lines.txt` report.
+- **Enterprise-Grade Logging:** Features a built-in dual-handler logging mechanism that outputs clean console streams and automatically preserves execution history inside an isolated `logs/` directory.
+- **Frontend-Ready Design:** Built on a completely data-driven architecture, making it seamlessly compatible with future Web/Desktop interfaces (React, Vue, Electron, etc.).
+
+---
+
+## 🛠️ Installation & Quick Start
+
+Install the official package directly from PyPI:
 
 ```bash
-pip install pandas openpyxl
+pip install deli-heimdall
+Development Mode (Editable Install)
+If you are developing locally on the source code, eliminate the need for PYTHONPATH workarounds by running this command in the root directory:
 
-Pipeline'ı tetiklemek için projenin kök dizininde PYTHONPATH ayarını yaparak main.py dosyasını ateşleyin:
+Bash
+pip install -e .
+Now you can run your scripts directly from any terminal session:
 
-Windows (CMD):
+Bash
+python main.py
 
-DOS
-set PYTHONPATH=. && python main.py
-```
-
-Örnek Senaryo Tasarımı (config.yaml)
-Heimdall, karmaşık döngüler veya if-elif hamallıkları gerektirmez. Yapacağınız işlemleri sırasıyla YAML dosyasına dizmeniz yeterlidir:
+📋 Example Pipeline Configuration (config.yaml)
+Deli-Heimdall eliminates complex loops and messy if-elif boilerplates. Simply define your steps sequentially in a YAML configuration file:
 
 YAML
-project_name: "Heimdall Enerji Verisi Analizi"
+project_name: "Heimdall Energy Data Analysis"
+
 pipeline:
+  load:
+    path: "data/raw_dataset.csv"
+    encoding: "utf-8"
 
-- load:
-  path: "deneme.csv"
-  encoding: "utf-8"
-- save:
-  path: "output/sonuc.csv"
+  # Future transformation modules will be chained here dynamically
 
-🤝 Katkıda Bulunun
-Heimdall geliştirilmeye açık modüler bir yapıya sahiptir. Yeni bir veri işleme adımı eklemek için MyPipeline sınıfına çağrılabilir (callable) yeni bir metot eklemeniz yeterlidir; dinamik akış motorumuz onu otomatik olarak tanıyacaktır!
+  save:
+    path: "output/cleaned_result.csv"
+In your Python code, executing this pipeline is as simple as:
 
-Eklemek istediğiniz özellikler için lütfen bir Issue açın veya Pull Request gönderin.
+Python
+import dheimdall
+
+# Your dynamic pipeline execution logic here
+🤝 Contributing
+Deli-Heimdall features a highly modular, open architecture. To introduce a new data processing stage, simply add a callable method to your pipeline class—our dynamic execution engine will automatically register and resolve it!
+
+Feel free to open an Issue or submit a Pull Request for any features or improvements you'd like to add.
+
+Licensed under the MIT License.
+```
