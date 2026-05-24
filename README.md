@@ -2,7 +2,7 @@
 We are excited to introduce a major architectural leap in the core pipeline execution model of Deli-Heimdall. With this release, the library transitions into a highly scalable, plugin-based framework, allowing users to build complex data processing workflows using pure YAML configurations without writing a single line of boilerplate Python code.
 
 🌟 Key Architectural Updates
-Safely Decoupled Pipeline Executor (MyPipeline): The core engine has been stripped of hardcoded methods. It now acts as a pure, lightweight YAML orchestrator that translates multi-stage blueprints into dynamic executions.
+Safely Decoupled Pipeline Executor (MyPipeline): The core engine has been stripped of hardcoded methods. It now acts as a pure, lightweight YAML orchestrator that translates multi-stage blueprints into dynamic executions..
 
 Declarative Multi-Stage Configurations (stages & actions): Complex pipelines can now be vertically scaled and logically grouped into stages (e.g., Ingestion, Cleaning, Export). This keeps your configuration files readable and organized, no matter how large the project grows.
 
